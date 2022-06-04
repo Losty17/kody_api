@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 @app.before_request
 def handle_auth():
+    # db.drop_all()
     # db.create_all()
 
     # token = request.headers.get('token')

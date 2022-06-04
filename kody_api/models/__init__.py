@@ -10,3 +10,4 @@ from .user import User
 from .user_badges import UserBadge
 from .user_socials import UserSocial
 from .vip import Vip
+from .mappings import *

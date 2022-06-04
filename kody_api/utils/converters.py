@@ -3,7 +3,7 @@ from typing import Any, Dict
 from sqlalchemy.engine.row import Row
 
 
-def row_to_json(r: Row) -> Dict[str, Any]:
+def row_to_json(r: Row) -> Dict[str, Any] | None:
     """Gera um JSON a partir de uma Row, oriunda de um query do SQLAlchemy.
 
     Args:
@@ -12,4 +12,4 @@ def row_to_json(r: Row) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: JSON da query
     """
-    return {n.lower(): v.__dict__ if hasattr(v, "__dict__") else v for n, v in zip(r.keys(), r)}
+    return {n.lower(): v.__dict__ if hasattr(v, "__dict__") else v for n, v in zip(r.keys(), r)} if r else None

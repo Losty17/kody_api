@@ -1,23 +1,20 @@
-from typing import List
-
 from flask import Blueprint, request
 from sqlalchemy.engine.row import Row
 
-from ..models import *
-from ..utils import row_to_json
-from . import app, db
+from ...models import *
+from ...utils import row_to_json
+from .. import db
+from ..blueprints import bp_user
 
-user = Blueprint('user', __name__, url_prefix='/user')
 
-
-@user.get('/<int:_id>')
+@bp_user.get('/<int:_id>')
 def get_user(_id: int):
     u: User = User.query.filter_by(id=_id).first()
 
     return u.__dict__ if u else {"error": "user not found"}, 404
 
 
-@user.get('/<int:_id>/profile')
+@bp_user.get('/<int:_id>/profile')
 def get_profile(_id: int):
     profile: Row = Profile.query\
         .join(User, User.id == Profile.ref_user)\
@@ -26,25 +23,15 @@ def get_profile(_id: int):
         .filter(User.id == _id)\
         .first()
 
-    return row_to_json(profile)
+    return row_to_json(profile) or {"error": "profile not found"}, 404
 
 
-@user.post('/user')
+@bp_user.post('/create')
 def create_user():
-    _id = int(request.headers['id'])
+    _id = int(request.headers.get('id'))
     u = User(_id)
 
     db.session.add(u)
     db.session.commit()
 
-    return User.query.filter_by(id=_id).first().to_json()
-
-
-@user.get('/create/<int:_id>/profile')
-def create_profile(_id: int):
-    p = Profile(_id, 'losty')
-
-    db.session.add(p)
-    db.session.commit()
-
-    return "ok"
+    return User.query.filter_by(id=_id).first().__dict__
