@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "name": "Python: Flask",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "env": { "FLASK_APP": "kody_api", "FLASK_ENV": "development" },
+      "args": ["run", "--no-debugger"],
+      "jinja": true,
+      "justMyCode": true
+    }
+  ]
+}
