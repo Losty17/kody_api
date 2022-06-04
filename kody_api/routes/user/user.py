@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from sqlalchemy.engine.row import Row
+from werkzeug.exceptions import NotFound, BadRequest
 
 from ...models import *
 from ...utils import row_to_json
@@ -7,31 +8,32 @@ from .. import db
 from ..blueprints import bp_user
 
 
-@bp_user.get('/<int:_id>')
-def get_user(_id: int):
-    u: User = User.query.filter_by(id=_id).first()
+@bp_user.get('/')
+def get_user():
+    d = request.get_json()
+    if type(d) is dict and 'id' in d:
+        u: User = User.query.filter_by(id=d['id']).first()
 
-    return u.__dict__ if u else {"error": "user not found"}, 404
+        if u:
+            return u.__dict__
 
+        else:
+            raise NotFound()
 
-@bp_user.get('/<int:_id>/profile')
-def get_profile(_id: int):
-    profile: Row = Profile.query\
-        .join(User, User.id == Profile.ref_user)\
-        .add_columns(User.id, User.ref_vip, User.streak, User.dt_created)\
-        .filter(User.id == Profile.ref_user)\
-        .filter(User.id == _id)\
-        .first()
-
-    return row_to_json(profile) or {"error": "profile not found"}, 404
+    else:
+        return BadRequest()
 
 
 @bp_user.post('/create')
 def create_user():
-    _id = int(request.headers.get('id'))
-    u = User(_id)
+    d = request.get_json()
+    if type(d) is dict and 'id' in d:
+        u = User(d['id'])
 
-    db.session.add(u)
-    db.session.commit()
+        db.session.add(u)
+        db.session.commit()
 
-    return User.query.filter_by(id=_id).first().__dict__
+        return User.query.filter_by(id=d['id']).first().__dict__
+
+    else:
+        raise BadRequest()

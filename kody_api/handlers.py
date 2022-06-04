@@ -30,3 +30,8 @@ def bad_request(e):
 @app.errorhandler(Exception)
 def undocumented_exception(e):
     return {"error": f"unhandled error, contact your administrator"}
+
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return {"error": "method not allowed"}

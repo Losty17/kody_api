@@ -3,11 +3,12 @@ from sqlalchemy.exc import IntegrityError
 from ...models import *
 from .. import db
 from ..blueprints import bp_profile
-from flask_sqlalchemy import request as req
+from flask import request as req
 
 
-@bp_profile.get('/create')
+@bp_profile.post('/create')
 def create_profile():
+    # TODO: Convert to request.get_json()
     params = {
         "id": req.headers.get('id'),
         "nickname": req.headers.get('nickname'),

@@ -2,32 +2,12 @@ from tkinter import N
 from typing import List
 
 from flask import request
-from sqlalchemy import func
-from werkzeug.exceptions import NotFound, BadRequest
+from werkzeug.exceptions import BadRequest
 
 from ...db import db
-from ...models import NODE_IDS, Question
+from ...models import Question
+from ...utils import check_question_data
 from ..blueprints import bp_question as q
-
-
-def check_question_data(d) -> Question | None:
-    try:
-        question = Question(
-            d['text'],
-            NODE_IDS[d['node']],
-            d['right_ans'],
-            d['fst_ans'],
-        )
-
-        question.snd_ans = d['snd_ans'] if 'snd_ans' in d else None
-        question.thd_ans = d['thd_ans'] if 'thd_ans' in d else None
-        question.explanation = d['explanation'] if 'explanation' in d else None
-
-    except:
-        return None
-
-    else:
-        return question
 
 
 @q.post('/add')
